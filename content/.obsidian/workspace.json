@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "lab/blog setup.md",
+                "file": "lab/online.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "blog setup"
+              "title": "online"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "lab/blog setup.md",
+                "file": "lab/online.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for blog setup"
+              "title": "Backlinks for online"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "lab/blog setup.md",
+                "file": "lab/online.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from blog setup"
+              "title": "Outgoing links from online"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "lab/blog setup.md",
+                "file": "lab/online.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of blog setup"
+              "title": "Outline of online"
             }
           }
         ]
@@ -185,9 +185,14 @@
   },
   "active": "7bdce57b1088d6dd",
   "lastOpenFiles": [
-    "lab/blog-setup.md",
     "lab/blog setup.md",
-    "lab/assets/Pasted image 20260119215131.png",
-    "lab/_index.md"
+    "lab/online.md",
+    "lab/_index.md",
+    "templates/lab.md",
+    "templates/note.md",
+    "templates/blog.md",
+    "templates",
+    "lab/blog-setup.md",
+    "lab/assets/Pasted image 20260119215131.png"
   ]
 }
