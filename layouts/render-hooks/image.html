@@ -1,0 +1,59 @@
+{{/*
+  Image render hook for Obsidian-style image embeds
+  Handles: ![[image.png]], ![[image.png|width]], ![[image.png|alt]]
+*/}}
+
+{{ $src := .Destination }}
+{{ $title := .Title }}
+{{ $text := .Text }}
+
+{{/* Parse image parameters from pipe syntax */}}
+{{ $parts := split $src "|" }}
+{{ $src = index $parts 0 }}
+
+{{ $width := "" }}
+{{ $alt := $src }}
+
+{{ if gt (len $parts) 1 }}
+  {{ $param := index $parts 1 }}
+  {{/* Check if it's a number (width) or text (alt) */}}
+  {{ if findRE "^[0-9]+$" $param }}
+    {{ $width = $param }}
+  {{ else }}
+    {{ $alt = $param }}
+  {{ end }}
+{{ end }}
+
+{{/* Use provided text as alt if available */}}
+{{ if $text }}
+  {{ $alt = $text }}
+{{ end }}
+
+{{/* Try to find image in various locations */}}
+{{ $image := "" }}
+{{ $currentSection := .CurrentSection.Section }}
+
+{{/* Try section-specific images first: /images/{section}/{src} */}}
+{{ if not $image }}
+  {{ $image = resources.Get (printf "/images/%s/%s" $currentSection $src) }}
+{{ end }}
+
+{{/* Try global images directory: /images/{src} */}}
+{{ if not $image }}
+  {{ $image = resources.Get (printf "/images/%s" $src) }}
+{{ end }}
+
+{{ if $image }}
+  {{ if $width }}
+    <img src="{{ $image.RelPermalink }}" alt="{{ $alt }}" width="{{ $width }}" style="max-width: 100%; height: auto; display: block; margin: 1.5em 0;" />
+  {{ else }}
+    <img src="{{ $image.RelPermalink }}" alt="{{ $alt }}" style="max-width: 100%; height: auto; display: block; margin: 1.5em 0;" />
+  {{ end }}
+{{ else }}
+  {{/* Fallback: treat as regular markdown image with relURL */}}
+  {{ if $width }}
+    <img src="{{ $src | relURL }}" alt="{{ $alt }}" width="{{ $width }}" style="max-width: 100%; height: auto; display: block; margin: 1.5em 0;" />
+  {{ else }}
+    <img src="{{ $src | relURL }}" alt="{{ $alt }}" style="max-width: 100%; height: auto; display: block; margin: 1.5em 0;" />
+  {{ end }}
+{{ end }}

@@ -1,0 +1,111 @@
+/* Custom styles override the theme */
+
+/* Background color */
+body {
+  background-color: #f7f5f0;
+  color: #2c2926;
+}
+
+/* Classic serif for headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'EB Garamond', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-weight: 600;
+  color: #1a1816;
+  /* margin-top: 1.5em; */
+  /* margin-bottom: 0.75em; */
+  line-height: 1.2;
+}
+
+h1 {
+  font-weight: 700;
+  font-size: 2.25em;
+  padding-bottom: 0.3em;
+}
+
+h2 {
+  font-size: 1.75em;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+/* Clean sans-serif for body text */
+body, p, li, td, th, blockquote, .menu {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.7;
+  font-size: 1.05rem;
+}
+
+/* Improved readability */
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5em 1em;
+}
+
+/* Paragraph spacing */
+p {
+  margin-bottom: 1.25em;
+}
+
+/* Blockquote styling */
+blockquote {
+  background: #ede8e0;
+  border-left: 4px solid #c4b8a8;
+  padding: 1em 1.5em;
+  margin: 1.5em 0;
+  font-style: italic;
+  border-radius: 0 4px 4px 0;
+}
+
+/* Code styling */
+code {
+  background: #e8e4df;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+}
+
+pre {
+  background: #e8e4df;
+  border: 1px solid #d4cfc7;
+  padding: 1em;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+}
+
+/* Menu styling */
+.menu a {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+/* Wikilink styles */
+.wikilink {
+  color: #2c7a7b;
+  text-decoration: none;
+  border-bottom: 1px dotted #2c7a7b;
+}
+
+.wikilink:hover {
+  color: #234e52;
+  border-bottom-style: solid;
+  background: rgba(44, 122, 123, 0.05);
+}
+
+.wikilink.broken {
+  color: #c53030;
+  border-bottom-color: #c53030;
+  font-style: italic;
+}
+

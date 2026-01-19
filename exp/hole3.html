@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D ASCII Black Hole</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #FFF;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            cursor: grab;
+            user-select: none;
+        }
+        body:active {
+            cursor: grabbing;
+        }
+        canvas {
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+        .hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: rgba(0,0,0,0.4);
+            font-family: monospace;
+            animation: fadeOut 4s forwards;
+        }
+        @keyframes fadeOut {
+            0%, 70% { opacity: 0.7; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div class="hint">Click and drag to rotate</div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d', { alpha: false });
+
+        const W = 100, H = 50, CX = 50, CY = 25, N = 2000;
+        const charW = 10, charH = 14;
+
+        canvas.width = W * charW;
+        canvas.height = H * charH;
+
+        // ASCII particle characters - various densities
+        const particles = ['@', '%', '#', '*', '+', '=', ':', '.', ' '];
+        const pLen = particles.length;
+
+        // Particle data
+        const pA = new Float32Array(N); // angle
+        const pR = new Float32Array(N); // radius
+        const pS = new Float32Array(N); // speed
+        const pC = new Uint8Array(N);  // character index
+
+        let rotation = 0;
+        let targetRotation = 0;
+        let drag = 0, mX = 0, mY = 0;
+
+        // Initialize particles in spiral
+        for (let i = 0; i < N; i++) {
+            pA[i] = Math.random() * Math.PI * 2;
+            pR[i] = 5 + Math.random() * 40;
+            pS[i] = 0.02 + Math.random() * 0.03;
+            pC[i] = Math.floor(Math.random() * pLen);
+        }
+
+        ctx.font = 'bold 13px Courier New';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        function render() {
+            ctx.fillStyle = '#FFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const cRot = Math.cos(rotation);
+            const sRot = Math.sin(rotation);
+
+            for (let i = 0; i < N; i++) {
+                // Update particle
+                pA[i] += pS[i];
+                pR[i] -= 0.15;
+
+                // Reset if too close to center
+                if (pR[i] < 2) {
+                    pR[i] = 40 + Math.random() * 5;
+                    pA[i] = Math.random() * Math.PI * 2;
+                    pC[i] = Math.floor(Math.random() * pLen);
+                }
+
+                // Calculate position with rotation
+                let x = Math.cos(pA[i]) * pR[i];
+                let y = Math.sin(pA[i]) * pR[i] * 0.6; // Flatten for 2D perspective
+
+                // Apply rotation
+                let rx = x * cRot - y * sRot;
+                let ry = x * sRot + y * cRot;
+
+                const px = CX + rx;
+                const py = CY + ry;
+
+                // Skip if out of bounds
+                if (px < 2 || px >= W - 2 || py < 2 || py >= H - 2) continue;
+
+                // Distance from center for color
+                const dist = Math.sqrt(rx * rx + ry * ry);
+
+                // Color based on distance (Midjourney style)
+                let color;
+                if (dist < 8) {
+                    color = '#E0FFFF'; // White/cyan center
+                } else if (dist < 15) {
+                    color = '#00BFFF'; // Electric blue
+                } else if (dist < 25) {
+                    color = '#FF00FF'; // Magenta
+                } else {
+                    color = '#8A2BE2'; // Deep violet
+                }
+
+                // Character based on distance (denser near center)
+                let char;
+                if (dist < 6) {
+                    char = '@';
+                } else if (dist < 12) {
+                    char = '%';
+                } else if (dist < 18) {
+                    char = '#';
+                } else if (dist < 25) {
+                    char = '*';
+                } else {
+                    char = '+';
+                }
+
+                ctx.fillStyle = color;
+                ctx.fillText(char, px * charW, py * charH);
+            }
+
+            // Draw central void
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(CX * charW, CY * charH, charW * 1.5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function loop() {
+            rotation += (targetRotation - rotation) * 0.1;
+            render();
+            requestAnimationFrame(loop);
+        }
+
+        canvas.addEventListener('mousedown', e => {
+            drag = 1;
+            mX = e.clientX;
+            mY = e.clientY;
+        });
+
+        canvas.addEventListener('mousemove', e => {
+            if (drag) {
+                const deltaX = e.clientX - mX;
+                targetRotation += deltaX * 0.01;
+                mX = e.clientX;
+                mY = e.clientY;
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => drag = 0);
+
+        canvas.addEventListener('touchstart', e => {
+            drag = 1;
+            mX = e.touches[0].clientX;
+            mY = e.touches[0].clientY;
+        }, { passive: true });
+
+        canvas.addEventListener('touchmove', e => {
+            if (drag) {
+                const deltaX = e.touches[0].clientX - mX;
+                targetRotation += deltaX * 0.01;
+                mX = e.touches[0].clientX;
+                mY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+
+        canvas.addEventListener('touchend', () => drag = 0, { passive: true });
+
+        loop();
+    </script>
+</body>
+</html>

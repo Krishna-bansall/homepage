@@ -1,0 +1,240 @@
+<script>
+// ===================================
+// Theme Toggle
+// ===================================
+(function() {
+  const html = document.documentElement;
+  const themeBtn = document.getElementById('themeBtn');
+  const lightIcon = themeBtn?.querySelector('.theme-icon-light');
+  const darkIcon = themeBtn?.querySelector('.theme-icon-dark');
+
+  function getPreferredTheme() {
+    const stored = localStorage.getItem('theme');
+    if (stored) return stored;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function setTheme(theme) {
+    html.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    updateIcons(theme);
+  }
+
+  function updateIcons(theme) {
+    if (!lightIcon || !darkIcon) return;
+    if (theme === 'dark') {
+      lightIcon.style.display = 'none';
+      darkIcon.style.display = 'block';
+    } else {
+      lightIcon.style.display = 'block';
+      darkIcon.style.display = 'none';
+    }
+  }
+
+  // Initialize theme
+  const preferredTheme = getPreferredTheme();
+  setTheme(preferredTheme);
+
+  // Listen for system theme changes
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (!localStorage.getItem('theme')) {
+      setTheme(e.matches ? 'dark' : 'light');
+    }
+  });
+
+  // Global toggle function
+  window.toggleTheme = function() {
+    const current = html.getAttribute('data-theme');
+    setTheme(current === 'dark' ? 'light' : 'dark');
+  };
+})();
+
+// ===================================
+// Mobile Menu Toggle
+// ===================================
+window.toggleMenu = function() {
+  const menu = document.getElementById('navMenu');
+  menu.classList.toggle('open');
+};
+
+// Close menu when clicking outside
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('navMenu');
+  const toggle = document.querySelector('.nav-toggle');
+  if (!menu?.contains(e.target) && !toggle?.contains(e.target)) {
+    menu?.classList.remove('open');
+  }
+});
+
+// ===================================
+// Search Functionality
+// ===================================
+{{ if site.Params.search.enable }}
+(function() {
+  let searchData = [];
+  let selectedIndex = 0;
+
+  // Load search index
+  async function loadSearchIndex() {
+    try {
+      const response = await fetch('{{ "index.json" | relURL }}');
+      searchData = await response.json();
+    } catch (error) {
+      console.error('Failed to load search index:', error);
+    }
+  }
+
+  // Open search modal
+  window.openSearch = function() {
+    const modal = document.getElementById('searchModal');
+    const input = document.getElementById('searchInput');
+    modal?.classList.add('open');
+    input?.focus();
+    if (searchData.length === 0) loadSearchIndex();
+  };
+
+  // Close search modal
+  window.closeSearch = function() {
+    const modal = document.getElementById('searchModal');
+    modal?.classList.remove('open');
+    selectedIndex = 0;
+  };
+
+  // Perform search
+  function performSearch(query) {
+    const results = document.getElementById('searchResults');
+    if (!query || !searchData.length) {
+      results.innerHTML = '';
+      return;
+    }
+
+    const fuse = new Fuse(searchData, {
+      keys: ['title', 'content', 'tags'],
+      threshold: 0.3,
+      ignoreLocation: true,
+      includeMatches: true
+    });
+
+    const matches = fuse.search(query);
+    displayResults(matches.slice(0, 8));
+  }
+
+  // Display search results
+  function displayResults(results) {
+    const container = document.getElementById('searchResults');
+    if (!results.length) {
+      container.innerHTML = '<div class="search-empty">No results found</div>';
+      return;
+    }
+
+    container.innerHTML = results.map((result, index) => `
+      <div class="search-result-item" data-index="${index}" onclick="navigateToResult('${result.item.url}')">
+        <div class="search-result-section">${result.item.section}</div>
+        <div class="search-result-title">${highlightMatch(result.item.title, result.matches?.[0])}</div>
+        <div class="search-result-excerpt">${result.item.content?.substring(0, 100)}...</div>
+      </div>
+    `).join('');
+
+    selectedIndex = 0;
+    updateSelectedResult();
+  }
+
+  // Highlight matching text
+  function highlightMatch(text, match) {
+    if (!match || !match.indices) return text;
+    // Simple implementation - could be enhanced
+    return text;
+  }
+
+  // Navigate to search result
+  window.navigateToResult = function(url) {
+    if (url) window.location.href = url;
+  };
+
+  // Update selected result styling
+  function updateSelectedResult() {
+    document.querySelectorAll('.search-result-item').forEach((item, index) => {
+      item.classList.toggle('selected', index === selectedIndex);
+    });
+  }
+
+  // Event listeners
+  document.addEventListener('keydown', (e) => {
+    // Open search with Cmd/Ctrl + K
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      window.openSearch();
+    }
+
+    // Close search with Escape
+    if (e.key === 'Escape') {
+      window.closeSearch();
+    }
+
+    // Navigate results with arrows
+    const modal = document.getElementById('searchModal');
+    if (modal?.classList.contains('open')) {
+      const items = document.querySelectorAll('.search-result-item');
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+        updateSelectedResult();
+        items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedIndex = Math.max(selectedIndex - 1, 0);
+        updateSelectedResult();
+        items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+      }
+      if (e.key === 'Enter' && items[selectedIndex]) {
+        items[selectedIndex].click();
+      }
+    }
+  });
+
+  // Search input handler
+  const searchInput = document.getElementById('searchInput');
+  let searchTimeout;
+  searchInput?.addEventListener('input', (e) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => performSearch(e.target.value), 200);
+  });
+
+  // Close on backdrop click
+  document.getElementById('searchModal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'searchModal') window.closeSearch();
+  });
+
+  // Load Fuse.js from CDN
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/fuse.js@6.6.2';
+  script.onload = () => loadSearchIndex();
+  document.head.appendChild(script);
+})();
+{{ end }}
+
+// ===================================
+// Wikilinks (preserved from original)
+// ===================================
+</script>
+
+<script src="{{ "js/wikilinks.js" | relURL }}?v=2"></script>
+
+<!-- KaTeX for math rendering -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<script src="//cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/katex/dist/contrib/auto-render.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false},
+        {left: '\\(', right: '\\)', display: false},
+        {left: '\\[', right: '\\]', display: true}
+      ],
+      throwOnError: false
+    });
+  });
+</script>

@@ -1,0 +1,37 @@
+/* Custom styles override the theme */
+
+h1 {
+  color: #2c3e50;
+  font-size: 2.5em;
+  font-weight: 700;
+  border-bottom: 3px solid #3498db;
+  padding-bottom: 0.3em;
+  margin-bottom: 0.5em;
+}
+
+h2 {
+  color: #34495e;
+  font-size: 2em;
+  font-weight: 600;
+}
+
+h3 {
+  color: #555;
+  font-size: 1.5em;
+}
+
+/* Body font */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Links */
+a {
+  color: #3498db;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+  color: #2980b9;
+}

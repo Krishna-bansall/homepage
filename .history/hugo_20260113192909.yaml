@@ -1,0 +1,113 @@
+baseURL:  http://localhost:1313
+languageCode: en-us
+title: Krishna's Homepage
+theme: ""
+
+enableRobotsTXT: true
+enableEmoji: true
+enableGitInfo: false
+
+sitemap:
+  changefreq: monthly
+  filename: sitemap.xml
+  priority: 0.5
+
+minify:
+  minifyOutput: true
+  tdewolff:
+    html:
+      keepWhitespace: false
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+    extensions:
+      passthrough:
+        enable: true
+        delimiters:
+          block:
+            - ['\[', '\]']
+            - ['$$', '$$']
+          inline:
+            - ['\(', '\)']
+            - ['$', '$']
+  highlight:
+    style: monokai
+    lineNos: false
+    lineNumbersInTable: false
+    noClasses: true
+    tabWidth: 2
+
+taxonomies:
+  tag: tags
+  category: categories
+
+permalinks:
+  notes: "/notes/:slug/"
+  blog: "/blog/:year/:month/:slug/"
+  lab: "/lab/:slug/"
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+  section:
+    - HTML
+    - RSS
+
+params:
+  description: "Krishna's personal homepage"
+  author: "Krishna"
+  image: "og-image.jpg"
+
+  # Navigation
+  navItems:
+    - name: Home
+      url: /
+      weight: 1
+    - name: Lab
+      url: /lab/
+      weight: 2
+    - name: Notes
+      url: /notes/
+      weight: 3
+    - name: Blog
+      url: /blog/
+      weight: 4
+    - name: Tags
+      url: /tags/
+      weight: 5
+
+  # Social links
+  social:
+    github: "https://github.com/krishna-bansall"
+    email: "krishna.bansal.contact@gmail.com"
+
+  # Search
+  search:
+    enable: true
+
+  # Dark mode
+  darkMode:
+    enable: true
+    default: system
+
+menu:
+  main:
+    - name: Home
+      url: /
+      weight: 1
+    - name: Lab
+      url: /lab/
+      weight: 2
+    - name: Notes
+      url: /notes/
+      weight: 3
+    - name: Blog
+      url: /blog/
+      weight: 4
+    - name: Tags
+      url: /tags/
+      weight: 5

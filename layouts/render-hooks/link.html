@@ -1,0 +1,44 @@
+{{/*
+  Wikilink render hook for Hugo
+  Supports: [[Note]], [[Note|Display]], [[Note]] across all sections
+*/}}
+
+{{ $destination := .Destination }}
+{{ $title := .Title }}
+{{ $text := .Text }}
+
+{{/* Extract display text from pipe syntax [[link|text]] */}}
+{{ $parts := split $destination "|" }}
+{{ $destination = index $parts 0 }}
+
+{{/* Check for display text parameter */}}
+{{ if gt (len $parts) 1 }}
+  {{ $text = index $parts 1 }}
+{{ end }}
+
+{{/* Use destination as text if no text provided */}}
+{{ if not $text }}
+  {{ $text = $destination }}
+{{ end }}
+
+{{/* Normalize the destination: spaces and underscores to hyphens, lowercase */}}
+{{ $normalizedDest := replaceRE "[_ ]+" "-" $destination }}
+{{ $normalizedDest = lower $normalizedDest }}
+
+{{/* Try to find the page across all sections by searching File.BaseFileName */}}
+{{ $page := where site.RegularPages "File.BaseFileName" $normalizedDest }}
+
+{{/* Also try with .md extension */}}
+{{ $pageWithExt := where site.RegularPages "File.LogicalName" (printf "%s.md" $normalizedDest) }}
+{{ $page = $page | append $pageWithExt }}
+
+{{/* Get first match if any */}}
+{{ $target := first 1 $page }}
+
+{{ if $target }}
+  {{/* Page found - create link */}}
+  <a href="{{ $target.RelPermalink }}" class="wikilink" title="{{ $target.Title }}">{{ $text | markdownify }}</a>
+{{ else }}
+  {{/* Page not found - broken link */}}
+  <span class="wikilink broken" title="Note not found: {{ $destination }}">{{ $text | markdownify }}</span>
+{{ end }}

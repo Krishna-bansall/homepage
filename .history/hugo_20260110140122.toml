@@ -1,0 +1,19 @@
+baseURL = 'https://example.org/'
+languageCode = 'en-us'
+title = 'My New Hugo Site'
+theme = 'hugo-xmin'
+
+[[menu.main]]
+  name = 'Home'
+  url = '/'
+  weight = 1
+
+[[menu.main]]
+  name = 'Lab'
+  url = '/lab/'
+  weight = 2
+
+[[menu.main]]
+  name = 'Notes'
+  url = '/notes/'
+  weight = 3

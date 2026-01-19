@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Notes | Krishna's Homepage</title><link>http://localhost:1313/notes/</link><description>Krishna's personal homepage</description><generator>Hugo 0.152.2</generator><language>en-us</language><managingEditor>Krishna</managingEditor><webMaster>Krishna</webMaster><lastBuildDate>Sat, 10 Jan 2026 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/notes/index.xml" rel="self" type="application/rss+xml"/><item><title>Test Note</title><link>http://localhost:1313/notes/test-note/</link><pubDate>Sat, 10 Jan 2026 00:00:00 +0000</pubDate><guid>http://localhost:1313/notes/test-note/</guid><description>&lt;h1 id="test-note"&gt;Test Note&lt;/h1&gt;
+&lt;p&gt;This is a test note to demonstrate the wikilink system.&lt;/p&gt;
+&lt;h2 id="features"&gt;Features&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Link to [[another-test|Another Test]] with custom text&lt;/li&gt;
+&lt;li&gt;Regular wikilink to [[test-blog-post]]&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;[[empty link]]&lt;/p&gt;
+&lt;h2 id="cross-section-links"&gt;Cross-Section Links&lt;/h2&gt;
+&lt;p&gt;You can link to:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[[test-lab-post|Lab posts]]&lt;/li&gt;
+&lt;li&gt;[[test-blog-post|Blog posts]]&lt;/li&gt;
+&lt;li&gt;[[other-test-notes|Other notes]]&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

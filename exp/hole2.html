@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Black Hole - White</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #FFF;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            cursor: grab;
+            user-select: none;
+        }
+        body:active {
+            cursor: grabbing;
+        }
+        canvas {
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+        .hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: rgba(0,0,0,0.4);
+            font-family: monospace;
+            animation: fadeOut 4s forwards;
+        }
+        @keyframes fadeOut {
+            0%, 70% { opacity: 0.7; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div class="hint">Click and drag to rotate</div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d', { alpha: false });
+        
+        const W = 120, H = 60, CX = 60, CY = 30, N = 2400;
+        const charW = 8, charH = 12;
+
+        canvas.width = W * charW;
+        canvas.height = H * charH;
+        
+        const words = ['void','null','int','var','for','if','def','new','try','let','set','get','map','use','run','end','obj','key','val','bit','hex','str','arr','ptr','ref','fn','db','api','id','uid','url','dns','tcp','udp','ssh','cpu','ram','gpu','io','os','vm'];
+        const wLen = words.length;
+
+        // Particle data
+        const pA = new Float32Array(N);
+        const pR = new Float32Array(N);
+        const pH = new Float32Array(N);
+        const pS = new Float32Array(N);
+        const pW = new Uint8Array(N);
+        const pChar = new Uint8Array(N);
+
+        let rX = 0.4, rY = 0, tX = 0.4, tY = 0;
+        let drag = 0, mX = 0, mY = 0;
+
+        // Initialize (smaller black hole radius)
+        for (let i = 0; i < N; i++) {
+            pA[i] = Math.random() * 6.28;
+            pR[i] = 12 + Math.random() * 25; // Reduced from 20-60 to 12-37
+            pH[i] = (Math.random() - 0.5) * 4; // Reduced height spread
+            pS[i] = 0.05 / Math.sqrt(pR[i] / 15);
+            pW[i] = Math.random() * wLen | 0;
+            pChar[i] = Math.random() * 100 | 0;
+        }
+
+        // Trig cache (lookup table for 0 to 2π)
+        const TRIG_BITS = 10;
+        const TRIG_SIZE = 1 << TRIG_BITS;
+        const TRIG_MASK = TRIG_SIZE - 1;
+        const cosT = new Float32Array(TRIG_SIZE);
+        const sinT = new Float32Array(TRIG_SIZE);
+        for (let i = 0; i < TRIG_SIZE; i++) {
+            const a = (i / TRIG_SIZE) * Math.PI * 2;
+            cosT[i] = Math.cos(a);
+            sinT[i] = Math.sin(a);
+        }
+
+        const fCos = a => cosT[((a * TRIG_SIZE / (Math.PI * 2)) | 0) & TRIG_MASK];
+        const fSin = a => sinT[((a * TRIG_SIZE / (Math.PI * 2)) | 0) & TRIG_MASK];
+        
+        // Setup canvas
+        ctx.font = 'bold 14px Courier New';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        function render() {
+            // Clear with white background
+            ctx.fillStyle = '#FFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const cRX = fCos(rX), sRX = fSin(rX);
+            const cRY = fCos(rY), sRY = fSin(rY);
+
+            // Pre-allocate batch arrays (reuse to avoid GC)
+            const batches = [[], [], [], []];
+
+            for (let i = 0; i < N; i++) {
+                pA[i] += pS[i];
+                pR[i] -= 0.20;
+                if (pR[i] < 2) {
+                    pA[i] = Math.random() * 6.28;
+                    pR[i] = 12 + Math.random() * 25;
+                    pChar[i] = Math.random() * 100 | 0;
+                }
+
+                const ca = fCos(pA[i]), sa = fSin(pA[i]);
+                let x = ca * pR[i];
+                let y = pH[i];
+                let z = sa * pR[i];
+
+                // Rotate
+                let ty = y * cRX - z * sRX;
+                z = y * sRX + z * cRX;
+                y = ty;
+
+                let tx = x * cRY + z * sRY;
+                z = -x * sRY + z * cRY;
+                x = tx;
+
+                const d = 70 + z;
+                if (d < 8) continue;
+
+                const sc = 100 / d;
+                const px = CX + x * sc;
+                const py = CY + y * sc * 0.5;
+
+                if (px < -5 || px >= W + 5 || py < -5 || py >= H + 5) continue;
+
+                const heat = 1 - pR[i] / 40; // Adjusted for smaller radius
+                const word = words[pW[i]];
+                let ch, batchIdx;
+
+                if (heat > 0.8) {
+                    ch = '█';
+                    batchIdx = 0;
+                } else if (heat > 0.6) {
+                    ch = word[0];
+                    batchIdx = 1;
+                } else if (heat > 0.4) {
+                    ch = word[(pR[i] / 8 | 0) % word.length];
+                    batchIdx = 2;
+                } else {
+                    ch = word[pChar[i] % word.length];
+                    batchIdx = 3;
+                }
+
+                batches[batchIdx].push(ch, px * charW, py * charH);
+            }
+
+            // Render batches - Midjourney style accretion disk
+            ctx.shadowBlur = 0;
+
+            // Core (innermost) - burning white/cyan
+            if (batches[0].length > 0) {
+                ctx.fillStyle = '#E0FFFF';
+                for (let j = 0; j < batches[0].length; j += 3) {
+                    ctx.fillText(batches[0][j], batches[0][j + 1], batches[0][j + 2]);
+                }
+            }
+
+            // Very close - electric blue
+            if (batches[1].length > 0) {
+                ctx.fillStyle = '#00BFFF';
+                for (let j = 0; j < batches[1].length; j += 3) {
+                    ctx.fillText(batches[1][j], batches[1][j + 1], batches[1][j + 2]);
+                }
+            }
+
+            // Mid-range - magenta/purple
+            if (batches[2].length > 0) {
+                ctx.fillStyle = '#FF00FF';
+                for (let j = 0; j < batches[2].length; j += 3) {
+                    ctx.fillText(batches[2][j], batches[2][j + 1], batches[2][j + 2]);
+                }
+            }
+
+            // Outer - deep violet
+            if (batches[3].length > 0) {
+                ctx.fillStyle = '#8A2BE2';
+                for (let j = 0; j < batches[3].length; j += 3) {
+                    ctx.fillText(batches[3][j], batches[3][j + 1], batches[3][j + 2]);
+                }
+            }
+
+            // Center point - pure black void
+            ctx.fillStyle = '#000000';
+            ctx.fillText('●', CX * charW, CY * charH);
+        }
+        
+        function loop() {
+            rX += (tX - rX) * 0.15;
+            rY += (tY - rY) * 0.15;
+            render();
+            requestAnimationFrame(loop);
+        }
+        
+        canvas.addEventListener('mousedown', e => {
+            drag = 1;
+            mX = e.clientX;
+            mY = e.clientY;
+        });
+        
+        canvas.addEventListener('mousemove', e => {
+            if (drag) {
+                tX += (e.clientY - mY) * 0.008;
+                tY += (e.clientX - mX) * 0.008;
+                mX = e.clientX;
+                mY = e.clientY;
+            }
+        });
+        
+        canvas.addEventListener('mouseup', () => drag = 0);
+        
+        canvas.addEventListener('touchstart', e => {
+            drag = 1;
+            mX = e.touches[0].clientX;
+            mY = e.touches[0].clientY;
+        }, { passive: true });
+        
+        canvas.addEventListener('touchmove', e => {
+            if (drag) {
+                tX += (e.touches[0].clientY - mY) * 0.008;
+                tY += (e.touches[0].clientX - mX) * 0.008;
+                mX = e.touches[0].clientX;
+                mY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+        
+        canvas.addEventListener('touchend', () => drag = 0, { passive: true });
+        
+        loop();
+    </script>
+</body>
+</html>

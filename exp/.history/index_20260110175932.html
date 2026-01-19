@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Black Hole</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            cursor: grab;
+            user-select: none;
+        }
+        body:active {
+            cursor: grabbing;
+        }
+        canvas {
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+        .hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: rgba(255,255,255,0.5);
+            font-family: monospace;
+            animation: fadeOut 4s forwards;
+        }
+        @keyframes fadeOut {
+            0%, 70% { opacity: 0.7; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div class="hint">Click and drag to rotate</div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d', { alpha: false });
+        
+        const W = 120, H = 60, CX = 60, CY = 30, N = 1500;
+        const charW = 8, charH = 12;
+        
+        canvas.width = W * charW;
+        canvas.height = H * charH;
+        
+        const words = ['void','null','int','var','for','if','def','new','try','let','set','get','map','use','run','end','obj','key','val','bit','hex','str','arr','ptr','ref','fn','db','api','id','uid','url','dns','tcp','udp','ssh','cpu','ram','gpu','io','os','vm'];
+        const wLen = words.length;
+        
+        // Particle data
+        const pA = new Float32Array(N);
+        const pR = new Float32Array(N);
+        const pH = new Float32Array(N);
+        const pS = new Float32Array(N);
+        const pW = new Uint8Array(N);
+        
+        let rX = 0.4, rY = 0, tX = 0.4, tY = 0;
+        let drag = 0, mX = 0, mY = 0;
+        
+        // Initialize
+        for (let i = 0; i < N; i++) {
+            pA[i] = Math.random() * 6.28;
+            pR[i] = 20 + Math.random() * 40;
+            pH[i] = (Math.random() - 0.5) * 6;
+            pS[i] = 0.08 / Math.sqrt(pR[i] / 20);
+            pW[i] = Math.random() * wLen | 0;
+        }
+        
+        // Trig cache
+        const TRIG = 628;
+        const cosT = new Float32Array(TRIG);
+        const sinT = new Float32Array(TRIG);
+        for (let i = 0; i < TRIG; i++) {
+            const a = (i / 100);
+            cosT[i] = Math.cos(a);
+            sinT[i] = Math.sin(a);
+        }
+        
+        const fCos = a => cosT[((a * 100) | 0) % TRIG];
+        const fSin = a => sinT[((a * 100) | 0) % TRIG];
+        
+        // Setup canvas
+        ctx.fillStyle = '#000';
+        ctx.font = '12px Courier New';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        function render() {
+            // Clear
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            const cRX = fCos(rX), sRX = fSin(rX);
+            const cRY = fCos(rY), sRY = fSin(rY);
+            
+            // Render particles
+            for (let i = 0; i < N; i++) {
+                pA[i] += pS[i];
+                pR[i] -= 0.4;
+                if (pR[i] < 3) {
+                    pA[i] = Math.random() * 6.28;
+                    pR[i] = 20 + Math.random() * 40;
+                }
+                
+                const ca = fCos(pA[i]), sa = fSin(pA[i]);
+                let x = ca * pR[i];
+                let y = pH[i];
+                let z = sa * pR[i];
+                
+                // Rotate
+                let ty = y * cRX - z * sRX;
+                z = y * sRX + z * cRX;
+                y = ty;
+                
+                let tx = x * cRY + z * sRY;
+                z = -x * sRY + z * cRY;
+                x = tx;
+                
+                const d = 100 + z;
+                if (d <= 0) continue;
+                
+                const sc = 100 / d;
+                const px = CX + x * sc;
+                const py = CY + y * sc * 0.5;
+                
+                if (px < 0 || px >= W || py < 0 || py >= H) continue;
+                
+                const heat = 1 - pR[i] / 60;
+                const word = words[pW[i]];
+                let ch, col;
+                
+                if (heat > 0.8) {
+                    ch = '█';
+                    col = '#FFF';
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = '#FFF';
+                } else if (heat > 0.6) {
+                    ch = word[0];
+                    col = '#FF0';
+                    ctx.shadowBlur = 0;
+                } else if (heat > 0.4) {
+                    ch = word[(pR[i] / 10 | 0) % word.length];
+                    col = '#F90';
+                    ctx.shadowBlur = 0;
+                } else {
+                    ch = word[(Math.random() * word.length) | 0];
+                    col = '#F30';
+                    ctx.shadowBlur = 0;
+                }
+                
+                ctx.fillStyle = col;
+                ctx.fillText(ch, px * charW, py * charH);
+            }
+            
+            // Center point
+            ctx.fillStyle = '#FFF';
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = '#FFF';
+            ctx.fillText('●', CX * charW, CY * charH);
+            ctx.shadowBlur = 0;
+        }
+        
+        function loop() {
+            rX += (tX - rX) * 0.15;
+            rY += (tY - rY) * 0.15;
+            render();
+            requestAnimationFrame(loop);
+        }
+        
+        canvas.addEventListener('mousedown', e => {
+            drag = 1;
+            mX = e.clientX;
+            mY = e.clientY;
+        });
+        
+        canvas.addEventListener('mousemove', e => {
+            if (drag) {
+                tX += (e.clientY - mY) * 0.008;
+                tY += (e.clientX - mX) * 0.008;
+                mX = e.clientX;
+                mY = e.clientY;
+            }
+        });
+        
+        canvas.addEventListener('mouseup', () => drag = 0);
+        
+        canvas.addEventListener('touchstart', e => {
+            drag = 1;
+            mX = e.touches[0].clientX;
+            mY = e.touches[0].clientY;
+        }, { passive: true });
+        
+        canvas.addEventListener('touchmove', e => {
+            if (drag) {
+                tX += (e.touches[0].clientY - mY) * 0.008;
+                tY += (e.touches[0].clientX - mX) * 0.008;
+                mX = e.touches[0].clientX;
+                mY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+        
+        canvas.addEventListener('touchend', () => drag = 0, { passive: true });
+        
+        loop();
+    </script>
+</body>
+</html>

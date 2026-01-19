@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wave Superposition - Iteration 2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            overflow-x: hidden;
+        }
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+        p {
+            font-size: 1.1rem;
+            opacity: 0.7;
+            line-height: 1.6;
+        }
+        .wave-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 250px;
+            z-index: 1;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .footer-text {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(0, 0, 0, 0.4);
+            font-size: 0.85rem;
+            z-index: 2;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>Wave Interference Patterns</h1>
+        <p>Three waves of equal frequency with different phases. Notice how they create beating patterns and complex interference.</p>
+    </div>
+
+    <div class="wave-container">
+        <canvas id="waveCanvas"></canvas>
+    </div>
+
+    <div class="footer-text">© 2026 — Wave Superposition Demo</div>
+
+    <script>
+        const canvas = document.getElementById('waveCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Three waves with same frequency but different phases - creates beating
+        const waves = [
+            { amplitude: 35, frequency: 0.012, speed: 0.015, phase: 0, color: 'rgba(255, 100, 100, 0.3)', width: 1 },
+            { amplitude: 35, frequency: 0.012, speed: 0.015, phase: Math.PI * 2/3, color: 'rgba(100, 200, 150, 0.3)', width: 1 },
+            { amplitude: 35, frequency: 0.012, speed: 0.015, phase: Math.PI * 4/3, color: 'rgba(100, 150, 255, 0.3)', width: 1 }
+        ];
+
+        let time = 0;
+        const baseY = 125;
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+        }
+
+        function drawWave(wave, t) {
+            ctx.beginPath();
+            for (let x = 0; x <= canvas.width; x += 2) {
+                const y = baseY + wave.amplitude * Math.sin(wave.frequency * x + t * wave.speed + wave.phase);
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = wave.color;
+            ctx.lineWidth = wave.width;
+            ctx.stroke();
+        }
+
+        function drawSuperposition(t) {
+            const points = [];
+            for (let x = 0; x <= canvas.width; x += 1.5) {
+                let y = baseY;
+                waves.forEach(wave => {
+                    y += wave.amplitude * Math.sin(wave.frequency * x + t * wave.speed + wave.phase);
+                });
+                points.push({x, y});
+            }
+
+            // Draw with gradient based on local amplitude
+            ctx.beginPath();
+            points.forEach((p, i) => {
+                if (i === 0) ctx.moveTo(p.x, p.y);
+                else ctx.lineTo(p.x, p.y);
+            });
+
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            for (let i = 0; i <= 20; i++) {
+                const x = (canvas.width / 20) * i;
+                let totalY = 0;
+                waves.forEach(w => {
+                    totalY += w.amplitude * Math.sin(w.frequency * x + t * w.speed + w.phase);
+                });
+                const normalizedAmp = Math.abs(totalY) / 100;
+                const hue = 350 - normalizedAmp * 200; // Red to blue
+                gradient.addColorStop(i/20, `hsla(${hue}, 80%, 60%, 0.8)`);
+            }
+
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Draw interference nodes
+            points.forEach((p, i) => {
+                if (i % 80 === 0) {
+                    const amp = Math.abs(p.y - baseY);
+                    if (amp < 5) {
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(255, 50, 50, 0.8)';
+                        ctx.fill();
+                    } else if (amp > 80) {
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(50, 100, 255, 0.7)';
+                        ctx.fill();
+                    }
+                }
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw component waves
+            waves.forEach(wave => drawWave(wave, time));
+
+            // Draw superposition
+            drawSuperposition(time);
+
+            time += 1;
+            requestAnimationFrame(animate);
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        animate();
+    </script>
+</body>
+</html>

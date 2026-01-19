@@ -1,0 +1,10 @@
+{{ define "main" }}
+<div class="container error-page">
+  <h1 class="error-title">404</h1>
+  <p class="error-message">This page doesn't exist. Let's get you back home.</p>
+  <div style="display: flex; gap: 1rem; justify-content: center;">
+    <a href="{{ "/" | relURL }}" class="btn btn-primary">Go Home</a>
+    <a href="{{ "/notes/" | relURL }}" class="btn btn-secondary">Browse Notes</a>
+  </div>
+</div>
+{{ end }}

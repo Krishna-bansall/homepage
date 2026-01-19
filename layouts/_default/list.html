@@ -1,0 +1,194 @@
+{{ define "main" }}
+<div class="container">
+  <header class="section">
+    <h1>{{ .Title }}</h1>
+    {{- with .Params.description }}
+    <p class="section-description">{{ . }}</p>
+    {{- end }}
+    {{- if .Content }}
+    <div class="section-content">
+      {{ .Content }}
+    </div>
+    {{- end }}
+  </header>
+</div>
+<div class="container">
+
+  <!-- Lab section shows timeline -->
+  {{- if eq .CurrentSection.Type "lab" }}
+  <div class="timeline">
+    {{- $pages := .Pages.ByDate.Reverse }}
+    {{- $currentDay := "" }}
+    {{- range $pages }}
+      {{- $thisDay := .Date.Format "2006-01-02" }}
+      {{- if ne $thisDay $currentDay }}
+        {{- if ne $currentDay "" }}</div>{{- end }}
+        <div class="timeline-day">
+          <div class="timeline-date">
+            <span class="timeline-date-day">{{ .Date.Format "Jan 2" }}</span>
+            <span class="timeline-date-year">{{ .Date.Format "2006" }}</span>
+          </div>
+      {{- end }}
+      {{- $currentDay = $thisDay }}
+      <article class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <span class="timeline-time">{{ .Date.Format "3:04 PM" }}</span>
+            {{- if .Title }}
+            <h3 class="timeline-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+            {{- end }}
+          </div>
+          <div class="timeline-body">
+            {{ .Content }}
+          </div>
+        </div>
+      </article>
+    {{- end }}
+    {{- if $currentDay }}</div>{{- end }}
+  </div>
+
+  <!-- Blog section shows card grid -->
+  {{- else if eq .CurrentSection.Type "blog" }}
+  <div class="card-grid">
+    {{- range .Pages }}
+    <article class="card">
+      <h2 class="card-title">
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      </h2>
+      <div class="card-meta">
+        <span class="card-meta-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          {{ .Date.Format "Jan 2, 2006" }}
+        </span>
+      </div>
+      {{- with .Description }}
+      <p class="card-description">{{ . }}</p>
+      {{- else }}
+      <p class="card-description">{{ .Summary }}</p>
+      {{- end }}
+      {{- with .Params.tags }}
+      <div class="card-meta" style="margin-top: 1rem; margin-bottom: 0;">
+        {{- range first 3 . }}
+        <a href="{{ "/tags/" | relURL }}{{ . | urlize }}/" class="card-tag">{{ . }}</a>
+        {{- end }}
+      </div>
+      {{- end }}
+    </article>
+    {{- end }}
+  </div>
+
+  <!-- Notes section shows simple list -->
+  {{- else if eq .CurrentSection.Type "notes" }}
+  <div class="section">
+    <ul class="post-list">
+      {{- range .Pages }}
+      <li class="post-item">
+        <span class="post-date">{{ .Date.Format "Jan 2" }}</span>
+        <h3 class="post-title">
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        </h3>
+      </li>
+      {{- end }}
+    </ul>
+  </div>
+
+  <!-- Tags section shows tag grid with posts -->
+  {{- else if eq .CurrentSection.Type "tags" }}
+  <div class="tags-grid">
+    {{- range .Pages }}
+    <div class="tag-card">
+      <a href="{{ .RelPermalink }}" class="tag-card-header">
+        <span class="tag-card-name">{{ .Title }}</span>
+        <span class="tag-card-count">{{ len .Pages }} {{ if eq (len .Pages) 1 }}post{{ else }}posts{{ end }}</span>
+      </a>
+      {{- if .Pages }}
+      <ul class="tag-card-posts">
+        {{- range first 3 .Pages }}
+        <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+        {{- end }}
+        {{- if gt (len .Pages) 3 }}
+        <li class="tag-card-more"><a href="{{ .RelPermalink }}">View all &rarr;</a></li>
+        {{- end }}
+      </ul>
+      {{- end }}
+    </div>
+    {{- end }}
+  </div>
+
+  <!-- Individual tag page (taxonomy term) -->
+  {{- else if eq .Kind "term" }}
+  <div class="card-grid">
+    {{- range .Pages }}
+    <article class="card">
+      <h2 class="card-title">
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      </h2>
+      <div class="card-meta">
+        <span class="card-meta-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          {{ .Date.Format "Jan 2, 2006" }}
+        </span>
+        <span class="card-meta-item">{{ .Type | title }}</span>
+      </div>
+      {{- with .Description }}
+      <p class="card-description">{{ . }}</p>
+      {{- else }}
+      <p class="card-description">{{ .Summary }}</p>
+      {{- end }}
+    </article>
+    {{- end }}
+  </div>
+
+  <!-- Default: card grid -->
+  {{- else }}
+  <div class="card-grid">
+    {{- range .Pages }}
+    <article class="card">
+      <h2 class="card-title">
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      </h2>
+      <div class="card-meta">
+        <span class="card-meta-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          {{ .Date.Format "Jan 2, 2006" }}
+        </span>
+      </div>
+      {{- with .Description }}
+      <p class="card-description">{{ . }}</p>
+      {{- else }}
+      <p class="card-description">{{ .Summary }}</p>
+      {{- end }}
+    </article>
+    {{- end }}
+  </div>
+  {{- end }}
+
+  <!-- Pagination -->
+  {{- if gt (len .Pages) 12 }}
+  <nav style="margin-top: 3rem; display: flex; justify-content: center; gap: 0.5rem;">
+    {{- if .Paginator.HasPrev }}
+    <a href="{{ .Paginator.Prev.URL }}" class="btn btn-secondary">Previous</a>
+    {{- end }}
+    <span style="display: flex; align-items: center; gap: 0.5rem;">
+      {{- range .Paginator.Pagers }}
+      {{- if eq . .Paginator }}
+      <span style="padding: 0.5rem 1rem; font-weight: 600;">{{ .PageNumber }}</span>
+      {{- else }}
+      <a href="{{ .URL }}" class="btn btn-secondary" style="padding: 0.5rem 1rem;">{{ .PageNumber }}</a>
+      {{- end }}
+      {{- end }}
+    </span>
+    {{- if .Paginator.HasNext }}
+    <a href="{{ .Paginator.Next.URL }}" class="btn btn-secondary">Next</a>
+    {{- end }}
+  </nav>
+  {{- end }}
+</div>
+{{ end }}

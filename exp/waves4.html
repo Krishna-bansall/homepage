@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wave Superposition - Iteration 4</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            overflow-x: hidden;
+        }
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+        p {
+            font-size: 1.1rem;
+            opacity: 0.7;
+            line-height: 1.6;
+        }
+        .wave-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 180px;
+            z-index: 1;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .footer-text {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(0, 0, 0, 0.4);
+            font-size: 0.85rem;
+            z-index: 2;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>Wave Packets</h1>
+        <p>Modulated waves creating localized wave packets. Demonstrates how multiple frequencies combine to form wave groups.</p>
+    </div>
+
+    <div class="wave-container">
+        <canvas id="waveCanvas"></canvas>
+    </div>
+
+    <div class="footer-text">© 2026 — Wave Packet Visualization</div>
+
+    <script>
+        const canvas = document.getElementById('waveCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Create wave packets using two close frequencies (beat phenomenon)
+        const carriers = [
+            { freq: 0.05, amp: 15, speed: 0.03, color: 'rgba(255, 100, 100, 0.25)' },
+            { freq: 0.048, amp: 15, speed: 0.03, color: 'rgba(255, 150, 100, 0.25)' }
+        ];
+
+        const carriers2 = [
+            { freq: 0.08, amp: 10, speed: 0.04, color: 'rgba(100, 180, 200, 0.25)' },
+            { freq: 0.077, amp: 10, speed: 0.04, color: 'rgba(150, 150, 255, 0.25)' }
+        ];
+
+        let time = 0;
+        const baseY = 90;
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+        }
+
+        function drawPacket(carrierList, t, yOffset, color) {
+            const points = [];
+            for (let x = 0; x <= canvas.width; x += 1) {
+                let y = baseY + yOffset;
+                carrierList.forEach(c => {
+                    y += c.amp * Math.sin(c.freq * x + t * c.speed);
+                });
+                points.push({x, y});
+            }
+
+            ctx.beginPath();
+            points.forEach((p, i) => {
+                if (i === 0) ctx.moveTo(p.x, p.y);
+                else ctx.lineTo(p.x, p.y);
+            });
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Highlight wave packets (constructive interference regions)
+            points.forEach((p, i) => {
+                if (i % 60 === 0) {
+                    const amp = Math.abs(p.y - (baseY + yOffset));
+                    if (amp > 20) {
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+                        ctx.fillStyle = color.replace('0.8', '0.9').replace('0.25', '0.7');
+                        ctx.fill();
+                    }
+                }
+            });
+        }
+
+        function drawIndividualCarriers(carrierList, t, yOffset) {
+            carrierList.forEach(c => {
+                ctx.beginPath();
+                for (let x = 0; x <= canvas.width; x += 3) {
+                    const y = baseY + yOffset + c.amp * Math.sin(c.freq * x + t * c.speed);
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.strokeStyle = c.color;
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // First wave packet (warm)
+            drawIndividualCarriers(carriers, time, 0);
+            drawPacket(carriers, time, 0, 'rgba(255, 120, 80, 0.8)');
+
+            // Second wave packet (cool, higher frequency)
+            drawIndividualCarriers(carriers2, time, 40);
+            drawPacket(carriers2, time, 40, 'rgba(100, 160, 220, 0.8)');
+
+            // Combined interaction
+            const combinedPoints = [];
+            for (let x = 0; x <= canvas.width; x += 2) {
+                let y = baseY + 20;
+                carriers.forEach(c => y += c.amp * Math.sin(c.freq * x + time * c.speed));
+                carriers2.forEach(c => y += c.amp * Math.sin(c.freq * x + time * c.speed));
+                combinedPoints.push({x, y});
+            }
+
+            ctx.beginPath();
+            combinedPoints.forEach((p, i) => {
+                if (i === 0) ctx.moveTo(p.x, p.y);
+                else ctx.lineTo(p.x, p.y);
+            });
+            ctx.strokeStyle = 'rgba(180, 100, 200, 0.6)';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            time += 1;
+            requestAnimationFrame(animate);
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        animate();
+    </script>
+</body>
+</html>

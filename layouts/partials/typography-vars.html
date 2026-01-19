@@ -1,0 +1,77 @@
+{{- $typo := site.Data.typography -}}
+<style>
+:root {
+  /* === BASE === */
+  --font-size-base: {{ $typo.base_font_size }};
+  --line-height-base: {{ $typo.base_line_height }};
+  --rhythm: {{ $typo.base_unit }};
+
+  /* === MODULAR SCALE (Minor Third 1.2) === */
+  --scale-ratio: {{ $typo.scale.ratio }};
+  --text-xs: {{ $typo.scale.xs }};
+  --text-sm: {{ $typo.scale.sm }};
+  --text-base: {{ $typo.scale.base }};
+  --text-md: {{ $typo.scale.md }};
+  --text-lg: {{ $typo.scale.lg }};
+  --text-xl: {{ $typo.scale.xl }};
+  --text-xxl: {{ $typo.scale.xxl }};
+  --text-hero: {{ $typo.scale.hero }};
+
+  /* === MEASURE (Line Length) === */
+  --measure-narrow: {{ $typo.measure.narrow }};
+  --measure-optimal: {{ $typo.measure.optimal }};
+  --measure-wide: {{ $typo.measure.wide }};
+
+  /* === SPACING (4px grid) === */
+  --space-xs: {{ $typo.spacing.xs }};
+  --space-sm: {{ $typo.spacing.sm }};
+  --space-base: {{ $typo.spacing.base }};
+  --space-md: {{ $typo.spacing.md }};
+  --space-lg: {{ $typo.spacing.lg }};
+  --space-xl: {{ $typo.spacing.xl }};
+  --space-xxl: {{ $typo.spacing.xxl }};
+
+  /* === FONTS === */
+  --font-serif: {{ $typo.fonts.serif.family | safeCSS }};
+  --font-sans: {{ $typo.fonts.sans.family | safeCSS }};
+  --font-mono: {{ $typo.fonts.mono.family | safeCSS }};
+
+  /* === TRANSITIONS === */
+  --transition-fast: {{ $typo.transitions.fast | safeCSS }};
+  --transition-normal: {{ $typo.transitions.normal | safeCSS }};
+  --transition-slow: {{ $typo.transitions.slow | safeCSS }};
+
+  /* === LETTER SPACING === */
+  --tracking-tight: {{ $typo.letter_spacing.tight }};
+  --tracking-normal: {{ $typo.letter_spacing.normal }};
+  --tracking-wide: {{ $typo.letter_spacing.wide }};
+  --tracking-wider: {{ $typo.letter_spacing.wider }};
+
+  /* === COLORS (Light Mode) === */
+  --bg-primary: {{ $typo.colors.light.bg_primary }};
+  --bg-secondary: {{ $typo.colors.light.bg_secondary }};
+  --bg-card: {{ $typo.colors.light.bg_card }};
+  --text-primary: {{ $typo.colors.light.text_primary }};
+  --text-secondary: {{ $typo.colors.light.text_secondary }};
+  --text-muted: {{ $typo.colors.light.text_muted }};
+  --accent: {{ $typo.colors.light.accent }};
+  --accent-hover: {{ $typo.colors.light.accent_hover }};
+  --accent-light: {{ $typo.colors.light.accent }}1a;
+  --border: {{ $typo.colors.light.border }};
+  --border-light: {{ $typo.colors.light.border_light }};
+}
+
+[data-theme="dark"] {
+  --bg-primary: {{ $typo.colors.dark.bg_primary }};
+  --bg-secondary: {{ $typo.colors.dark.bg_secondary }};
+  --bg-card: {{ $typo.colors.dark.bg_card }};
+  --text-primary: {{ $typo.colors.dark.text_primary }};
+  --text-secondary: {{ $typo.colors.dark.text_secondary }};
+  --text-muted: {{ $typo.colors.dark.text_muted }};
+  --accent: {{ $typo.colors.dark.accent }};
+  --accent-hover: {{ $typo.colors.dark.accent_hover }};
+  --accent-light: {{ $typo.colors.dark.accent }}26;
+  --border: {{ $typo.colors.dark.border }};
+  --border-light: {{ $typo.colors.dark.border_light }};
+}
+</style>

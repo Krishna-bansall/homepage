@@ -1,0 +1,54 @@
+{{ define "main" }}
+<div class="container">
+  <!-- About Section -->
+  <section class="about-section">
+    <div class="about-content">
+      {{ .Content }}
+    </div>
+  </section>
+
+  <!-- Latest Posts Section -->
+  <!-- {{- $allPosts := slice }}
+  {{- range (slice "blog" "lab" "notes") }}
+    {{- with site.GetPage . }}
+      {{- $posts := where .RegularPages "Params.draft" "!=" true }}
+      {{- $allPosts = $allPosts | append $posts }}
+    {{- end }}
+  {{- end }}
+  {{- $allPosts = sort $allPosts "Date" "desc" }}
+  {{- if $allPosts }}
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Recent</h2>
+    </div>
+    <ul class="post-list">
+      {{- range first 10 $allPosts }}
+      <li class="post-item">
+        <span class="post-date">{{ .Date.Format "Jan 2" }}</span>
+        <span class="post-type">{{ .Type }}</span>
+        <h3 class="post-title">
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        </h3>
+      </li>
+      {{- end }}
+    </ul>
+  </section>
+  {{- end }} -->
+
+  <!-- Tags Cloud -->
+  <!-- {{- if site.Taxonomies.tags }}
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Topics</h2>
+    </div>
+    <div class="tags-cloud">
+      {{- range $name, $taxonomy := site.Taxonomies.tags }}
+      <a href="{{ "/tags/" | relURL }}{{ $name | urlize }}/" class="tag-cloud-item">
+        {{ $name }}
+      </a>
+      {{- end }}
+    </div>
+  </section>
+  {{- end }}
+</div>
+{{ end }} -->

@@ -1,0 +1,17 @@
+<footer class="footer">
+  <div class="container">
+    {{- with site.Params.social }}
+    <div class="footer-links">
+      {{- with .github }}
+      <a href="{{ . }}" class="footer-link" target="_blank" rel="noopener">GitHub</a>
+      {{- end }}
+      {{- with .email }}
+      <a href="mailto:{{ . }}" class="footer-link">Email</a>
+      {{- end }}
+      <a href="{{ "/index.xml" | relURL }}" class="footer-link" target="_blank">RSS</a>
+    </div>
+    {{- end }}
+    <p class="footer-credit">Made with <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a></p>
+    <p class="footer-copyright">&copy; {{ now.Year }} {{ site.Params.author | default "Krishna" }}</p>
+  </div>
+</footer>

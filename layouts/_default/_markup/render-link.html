@@ -1,0 +1,57 @@
+{{- /* Render link with wikilink support */ -}}
+{{- $href := .Destination }}
+{{- $text := .Text }}
+{{- $title := .Title }}
+
+<!-- Check if this is a wikilink -->
+{{- if hasPrefix $href "[[" }}
+  {{- $parts := slice }}
+  {{- $hasSplit := false }}
+  {{- range $index, $part := split $href "|" }}
+    {{- $cleanPart := trim $part "[] " }}
+    {{- $parts = $parts | append $cleanPart }}
+    {{- if gt $index 0 }}
+      {{- $hasSplit = true }}
+    {{- end }}
+  {{- end }}
+
+  {{- $target := index $parts 0 }}
+  {{- $target = trim $target "[[" }}
+  {{- $target = trim $target "]" }}
+
+  {{- if $hasSplit }}
+    {{- $text = index $parts 1 }}
+  {{- else }}
+    {{- $text = $target }}
+  {{- end }}
+
+  {{- /* Normalize the target path */ -}}
+  {{- $target = replace $target "\\" "/" }}
+  {{- $target = replace $target " " "-" }}
+  {{- $target = lower $target }}
+
+  {{- /* Try to find the page */ -}}
+  {{- $page := $.Site.GetPage $target }}
+  {{- if not $page }}
+    {{- $page = $.Site.GetPage (printf "/notes/%s" $target) }}
+  {{- end }}
+  {{- if not $page }}
+    {{- $page = $.Site.GetPage (printf "/lab/%s" $target) }}
+  {{- end }}
+  {{- if not $page }}
+    {{- $page = $.Site.GetPage (printf "/blog/%s" $target) }}
+  {{- end }}
+
+  {{- if $page }}
+    <a href="{{ $page.RelPermalink }}"{{ with $title }} title="{{ . }}"{{ end }} class="wikilink">{{ $text }}</a>
+  {{- else }}
+    <span class="wikilink wikilink-broken" title="Page not found: {{ $target }}">{{ $text }}</span>
+  {{- end }}
+
+{{- else }}
+  <!-- Regular link -->
+  <a href="{{ $href | safeURL }}"
+     {{- with $title }} title="{{ . }}"{{ end }}
+     {{- if hasPrefix $href "http" }} target="_blank" rel="noopener"{{ end }}
+  >{{ $text }}</a>
+{{- end }}

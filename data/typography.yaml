@@ -1,0 +1,109 @@
+# ===========================================
+# TYPOGRAPHY CONFIGURATION
+# ===========================================
+# A clean, readable typographic system based on:
+# - 16px base for comfortable reading
+# - 1.5 line height for body text (optimal for readability)
+# - Minor Third scale (1.2) for harmonious sizing
+# - 4px baseline grid for vertical rhythm
+# - 65 character measure for ideal line length
+# ===========================================
+
+# --- BASE SETTINGS ---
+base_font_size: "16px"           # Standard readable base
+base_line_height: 1.6            # Comfortable reading height
+base_unit: "1.5rem"              # 24px vertical rhythm unit
+
+# --- MODULAR SCALE ---
+# Using Minor Third (1.2) - gentle, readable progression
+# More subtle than Major Third, better for long-form reading
+scale:
+  ratio: 1.2
+  xs: "0.694rem"   # 11px - captions, fine print
+  sm: "0.833rem"   # 13px - small text, metadata
+  base: "1rem"     # 16px - body text
+  md: "1.2rem"     # 19px - h4, lead text
+  lg: "1.44rem"    # 23px - h3
+  xl: "1.728rem"   # 28px - h2
+  xxl: "2.074rem"  # 33px - h1
+  hero: "2.488rem" # 40px - hero titles
+
+# --- MEASURE (Line Length) ---
+# 45-75 characters per line is optimal
+# 65 characters is the sweet spot for readability
+measure:
+  narrow: "30rem"   # ~45 characters - sidebars, cards
+  optimal: "38rem"  # ~65 characters - ideal reading width
+  wide: "48rem"     # ~75 characters - code blocks, tables
+
+# --- SPACING ---
+# Based on 4px baseline grid (0.25rem)
+# Simple doubling progression for predictability
+spacing:
+  xs: "0.25rem"     # 4px  - tight gaps
+  sm: "0.5rem"      # 8px  - inline spacing
+  base: "1rem"      # 16px - standard gap
+  md: "1.5rem"      # 24px - between elements
+  lg: "2rem"        # 32px - section spacing
+  xl: "3rem"        # 48px - major sections
+  xxl: "4rem"       # 64px - page sections
+
+# --- FONTS ---
+fonts:
+  # All text uses Inter (clean, modern sans-serif)
+  serif:
+    family: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+    weight_normal: 400
+    weight_medium: 500
+    weight_bold: 600
+
+  # Sans-serif: For body text
+  sans:
+    family: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+    weight_normal: 400
+    weight_medium: 500
+    weight_bold: 600
+
+  # Monospace: For code blocks (JetBrains Mono - clean, modern)
+  mono:
+    family: "'JetBrains Mono', 'Monaco', 'Consolas', monospace"
+    weight_normal: 400
+
+# --- COLORS ---
+colors:
+  light:
+    bg_primary: "#faf8f5"       # Warm off-white
+    bg_secondary: "#f0ebe3"     # Slightly darker
+    bg_card: "#ffffff"
+    text_primary: "#1a1816"     # Near black, warm
+    text_secondary: "#5c5652"   # Mid gray, warm
+    text_muted: "#8a8580"       # Light gray
+    accent: "#c45a3b"           # Warm terracotta (less saturated)
+    accent_hover: "#a84a2d"
+    border: "#e0d9cf"
+    border_light: "#ebe6dd"
+
+  dark:
+    bg_primary: "#1a1816"
+    bg_secondary: "#242120"
+    bg_card: "#2a2724"
+    text_primary: "#f0ebe3"
+    text_secondary: "#b8b2aa"
+    text_muted: "#7a7470"
+    accent: "#d9735a"
+    accent_hover: "#e8856d"
+    border: "#3a3634"
+    border_light: "#2a2724"
+
+# --- TRANSITIONS ---
+transitions:
+  fast: "0.15s cubic-bezier(0.4, 0, 0.2, 1)"
+  normal: "0.25s cubic-bezier(0.4, 0, 0.2, 1)"
+  slow: "0.4s cubic-bezier(0.4, 0, 0.2, 1)"
+
+# --- LETTER SPACING ---
+letter_spacing:
+  tight: "-0.02em"    # For large headings
+  normal: "0"
+  wide: "0.02em"      # For small caps, labels
+  wider: "0.05em"     # For uppercase text

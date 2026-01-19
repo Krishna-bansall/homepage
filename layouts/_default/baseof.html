@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="{{ or site.Language.LanguageCode site.Language.Lang }}"
+    {{- with (default false .Site.Params.darkMode.enable) }}
+      data-theme-enabled="true"
+      data-theme="{{ $.Site.Params.darkMode.default | default "system" }}"
+    {{- end }}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ with site.Params.description }}{{ . }}{{ else }}{{ .Summary }}{{ end }}{{ end }}">
+  <meta name="author" content="{{ site.Params.author | default "Krishna" }}">
+  <link rel="canonical" href="{{ .Permalink }}">
+
+  {{- with site.Params.image }}
+  <meta property="og:image" content="{{ . | absURL }}">
+  {{- end }}
+  <meta property="og:title" content="{{ .Title }}">
+  <meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ site.Params.description }}{{ end }}">
+  <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+  <meta property="og:url" content="{{ .Permalink }}">
+
+  <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} | {{ site.Title }}{{ end }}</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="{{ "css/main.css" | relURL }}">
+
+  <!-- Typography Variables (from data/typography.yaml) -->
+  {{- partial "typography-vars.html" . }}
+
+  {{- block "head" . }}{{ end }}
+</head>
+
+<body>
+  {{- partial "header.html" . }}
+
+  <main>
+    {{- block "main" . }}{{ end }}
+  </main>
+
+  {{- partial "footer.html" . }}
+  {{- partial "search.html" . }}
+
+  <!-- Pre-built page index for instant wikilinks -->
+  <script id="page-index" type="application/json">
+  {
+    {{- $pages := slice }}
+    {{- range site.RegularPages }}
+    {{- $slug := .RelPermalink | replaceRE "^/" "" | replaceRE "/$" "" | lower }}
+    {{- $basename := path.Base $slug }}
+    {{- $pages = $pages | append (dict "slug" $slug "basename" $basename "url" .RelPermalink "title" .Title) }}
+    {{- end }}
+    "pages": [
+      {{- range $i, $p := $pages }}{{ if $i }},{{ end }}
+      {"s":"{{ $p.slug }}","b":"{{ $p.basename }}","u":"{{ $p.url }}"}
+      {{- end }}
+    ]
+  }
+  </script>
+
+  {{- block "scripts" . }}{{ end }}
+  {{- partial "scripts.html" . }}
+</body>
+</html>

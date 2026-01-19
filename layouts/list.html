@@ -1,0 +1,35 @@
+{{ partial "header.html" . }}
+
+{{if not .IsHome }}
+<h1>{{ .Title | markdownify }}</h1>
+{{ end }}
+
+<div class="content-wrapper">
+{{ .Content }}
+
+{{/* Only show list on section pages, not homepage */}}
+{{ if not .IsHome }}
+  {{/* Special layout for lab section: show full posts */}}
+  {{ if eq .Section "lab" }}
+    {{ $pages := .Pages }}
+    {{ range $index, $page := $pages }}
+      <article class="lab-post">
+        <h2>{{ $page.Title }}</h2>
+        {{ $page.Content }}
+      </article>
+      {{ if lt $index (sub (len $pages) 1) }}<hr>{{ end }}
+    {{ end }}
+  {{/* Default list layout for other sections */}}
+  {{ else }}
+    <ul>
+      {{ range .Pages }}
+      <li>
+        <a href="{{ .RelPermalink }}">{{ .Title | markdownify }}</a>
+      </li>
+      {{ end }}
+    </ul>
+  {{ end }}
+{{ end }}
+</div>
+
+{{ partial "footer.html" . }}

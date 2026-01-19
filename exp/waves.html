@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wave Superposition Animation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            overflow-x: hidden;
+        }
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+        p {
+            font-size: 1.1rem;
+            opacity: 0.7;
+            line-height: 1.6;
+        }
+        .wave-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            z-index: 1;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .footer-text {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(0, 0, 0, 0.4);
+            font-size: 0.85rem;
+            z-index: 2;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>Wave Superposition</h1>
+        <p>Multiple waves interacting through superposition principle. Notice how the waves combine to create complex interference patterns.</p>
+    </div>
+
+    <div class="wave-container">
+        <canvas id="waveCanvas"></canvas>
+    </div>
+
+    <div class="footer-text">© 2026 — Animated with ❤️</div>
+
+    <script>
+        const canvas = document.getElementById('waveCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Wave layers - from background to foreground
+        const waveLayers = [
+            // Layer 0: Subtle background waves (cool tones, very faint)
+            { amplitude: 15, frequency: 0.006, speed: 0.008, offset: 0, color: 'rgba(200, 200, 220, 0.15)', width: 1 },
+            { amplitude: 12, frequency: 0.008, speed: 0.01, offset: 1, color: 'rgba(180, 180, 210, 0.15)', width: 1 },
+
+            // Layer 1: Mid waves (transitioning to warm, more visible)
+            { amplitude: 20, frequency: 0.01, speed: 0.012, offset: 0.5, color: 'rgba(255, 180, 150, 0.25)', width: 1.5 },
+            { amplitude: 18, frequency: 0.012, speed: 0.015, offset: 2, color: 'rgba(255, 170, 140, 0.25)', width: 1.5 },
+
+            // Layer 2: The two main superimposing waves (warm, prominent)
+            { amplitude: 28, frequency: 0.015, speed: 0.018, offset: 0, color: 'rgba(255, 130, 100, 0.5)', width: 2.5 },
+            { amplitude: 28, frequency: 0.018, speed: 0.022, offset: Math.PI / 3, color: 'rgba(255, 150, 110, 0.5)', width: 2.5 },
+
+            // Layer 3: Colorful result waves (showing superposition effects)
+            { amplitude: 22, frequency: 0.02, speed: 0.025, offset: Math.PI / 6, color: 'rgba(255, 100, 120, 0.6)', width: 2 },
+            { amplitude: 25, frequency: 0.022, speed: 0.028, offset: 1.5, color: 'rgba(255, 120, 80, 0.6)', width: 2 },
+            { amplitude: 18, frequency: 0.025, speed: 0.03, offset: 3, color: 'rgba(255, 180, 100, 0.55)', width: 2 },
+
+            // Layer 4: Foreground delicate waves (very colorful, thin)
+            { amplitude: 10, frequency: 0.035, speed: 0.035, offset: 0.3, color: 'rgba(255, 80, 120, 0.4)', width: 1 },
+            { amplitude: 8, frequency: 0.04, speed: 0.04, offset: 2.5, color: 'rgba(255, 120, 150, 0.35)', width: 1 },
+        ];
+
+        // Superposition pair - special highlight
+        const superpositionWaves = [
+            { amplitude: 25, frequency: 0.014, speed: 0.02, offset: 0, color: 'rgba(255, 107, 107, 0.7)' },
+            { amplitude: 25, frequency: 0.014, speed: 0.02, offset: Math.PI, color: 'rgba(107, 150, 255, 0.7)' }
+        ];
+
+        let time = 0;
+        const baseY = 120;
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+        }
+
+        function drawWave(wave, t) {
+            ctx.beginPath();
+            for (let x = 0; x <= canvas.width; x += 1.5) {
+                const y = baseY + wave.amplitude * Math.sin(wave.frequency * x + t * wave.speed + wave.offset);
+                if (x === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.strokeStyle = wave.color;
+            ctx.lineWidth = wave.width;
+            ctx.stroke();
+        }
+
+        // Draw the special superposition demonstration
+        function drawSuperpositionDemo(t) {
+            const centerX = canvas.width * 0.3;
+
+            // Draw the two component waves (only in a section)
+            superpositionWaves.forEach((wave, idx) => {
+                ctx.beginPath();
+                for (let x = centerX - 150; x <= centerX + 150; x += 2) {
+                    const y = baseY + wave.amplitude * Math.sin(wave.frequency * x + t * wave.speed + wave.offset);
+                    if (x === centerX - 150) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.strokeStyle = wave.color;
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            });
+
+            // Draw the superposition result (bold)
+            ctx.beginPath();
+            for (let x = centerX - 150; x <= centerX + 150; x += 1.5) {
+                let y = baseY;
+                superpositionWaves.forEach(wave => {
+                    y += wave.amplitude * Math.sin(wave.frequency * x + t * wave.speed + wave.offset);
+                });
+                if (x === centerX - 150) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            // Dynamic color based on interference
+            const sampleY = Math.abs(
+                superpositionWaves[0].amplitude * Math.sin(superpositionWaves[0].frequency * centerX + t * superpositionWaves[0].speed) +
+                superpositionWaves[1].amplitude * Math.sin(superpositionWaves[0].frequency * centerX + t * superpositionWaves[0].speed + Math.PI)
+            );
+            const interferenceIntensity = sampleY / (superpositionWaves[0].amplitude + superpositionWaves[1].amplitude);
+
+            const r = Math.floor(200 + interferenceIntensity * 55);
+            const g = Math.floor(100 + interferenceIntensity * 100);
+            const b = Math.floor(150 + interferenceIntensity * 50);
+
+            ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.8)`;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw background wave layers
+            waveLayers.forEach(wave => {
+                drawWave(wave, time);
+            });
+
+            // Draw special superposition demo section
+            drawSuperpositionDemo(time);
+
+            time += 1;
+            requestAnimationFrame(animate);
+        }
+
+        // Initialize
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        animate();
+    </script>
+</body>
+</html>

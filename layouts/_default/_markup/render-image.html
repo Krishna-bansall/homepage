@@ -1,0 +1,86 @@
+{{- /* Render image with Obsidian-style support */ -}}
+{{- $src := .Destination }}
+{{- $alt := .Text }}
+{{- $title := .Title }}
+{{- $width := "" }}
+{{- $height := "" }}
+
+<!-- Parse Obsidian-style image syntax: ![[image.png|alt|widthxheight]] -->
+{{- if hasPrefix $src "[[" }}
+  {{- $parts := slice }}
+  {{- range $index, $part := split $src "|" }}
+    {{- $cleanPart := trim $part "[] " }}
+    {{- $parts = $parts | append $cleanPart }}
+  {{- end }}
+
+  {{- /* First part is the image path */ -}}
+  {{- $imagePath := index $parts 0 }}
+  {{- $imagePath = trim $imagePath "[[" }}
+  {{- $imagePath = trim $imagePath "]" }}
+
+  {{- /* Determine image section */ -}}
+  {{- $page := $.Page }}
+  {{- $imageSection := "" }}
+  {{- if $page }}
+    {{- $imageSection = $page.CurrentSection.Type }}
+  {{- end }}
+
+  {{- /* Build full path */ -}}
+  {{- $fullPath := "" }}
+  {{- if ne $imageSection "" }}
+    {{- $fullPath = printf "/%s/%s" $imageSection $imagePath }}
+  {{- else }}
+    {{- $fullPath = $imagePath }}
+  {{- end }}
+
+  {{- /* Try to find the image */ -}}
+  {{- $src = $fullPath }}
+
+  {{- /* Second part is alt text if provided */ -}}
+  {{- if gt (len $parts) 1 }}
+    {{- $alt = index $parts 1 }}
+  {{- end }}
+
+  {{- /* Third part could be dimensions */ -}}
+  {{- if gt (len $parts) 2 }}
+    {{- $dims := index $parts 2 }}
+    {{- if in $dims "x" }}
+      {{- $dimParts := split $dims "x" }}
+      {{- $width = index $dimParts 0 }}
+      {{- if gt (len $dimParts) 1 }}
+        {{- $height = index $dimParts 1 }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- /* Check if image exists, if not try alternative paths */ -}}
+{{- $imageResource := resources.GetMatch (strings.TrimPrefix "/" $src) }}
+{{- if not $imageResource }}
+  {{- $imageResource = resources.GetMatch (strings.TrimPrefix "/" (strings.TrimPrefix "/notes/" $src)) }}
+{{- end }}
+{{- if not $imageResource }}
+  {{- $imageResource = resources.GetMatch (strings.TrimPrefix "/" (strings.TrimPrefix "/lab/" $src)) }}
+{{- end }}
+
+{{- /* Build final image tag */ -}}
+{{- $finalSrc := $src }}
+{{- if $imageResource }}
+  {{- $finalSrc = $imageResource.RelPermalink }}
+{{- end }}
+
+{{- /* Style attributes */ -}}
+{{- $style := "" }}
+{{- if $width }}
+  {{- $style = printf "width: %s;" $width }}
+{{- end }}
+{{- if $height }}
+  {{- $style = printf "%s height: %s;" $style $height }}
+{{- end }}
+
+<img src="{{ $finalSrc | safeURL }}"
+     alt="{{ $alt }}"
+     {{- with $title }} title="{{ . }}"{{ end }}
+     {{- with $style }} style="{{ . }}"{{ end }}
+     loading="lazy"
+>

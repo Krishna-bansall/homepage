@@ -1,0 +1,182 @@
+/* Custom styles override the theme */
+
+/* Background color */
+body {
+  background-color: #f7f5f0;
+  color: #2c2926;
+}
+
+/* Classic serif for headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'EB Garamond', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-weight: 600;
+  color: #1a1816;
+  line-height: 1.2;
+}
+
+h1 {
+  font-weight: 700;
+  font-size: 2.25em;
+  padding-bottom: 0.3em;
+}
+
+h2 {
+  font-size: 1.75em;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+/* Clean sans-serif for body text */
+body, p, li, td, th {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.7;
+  font-size: 1.05rem;
+}
+
+/* Beautiful italics styling */
+em, i {
+  font-family: 'EB Garamond', 'Georgia', 'Times New Roman', serif;
+  font-style: italic;
+  color: #000000;
+  font-size: 1.05em;
+  letter-spacing: 0.01em;
+  /* More slant for extra emphasis */
+  transform: skewX(-2deg);
+  display: inline-block;
+}
+
+/* Improved readability */
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5em 1em;
+}
+
+/* Paragraph spacing */
+p {
+  margin-bottom: 1.25em;
+}
+
+/* Blockquote styling */
+blockquote {
+  background: #ede8e0;
+  border-left: 4px solid #c4b8a8;
+  padding: 1em 1.5em;
+  margin: 1.5em 0;
+  font-style: italic;
+  border-radius: 0 4px 4px 0;
+}
+
+/* Code styling */
+code {
+  background: #e8e4df;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+}
+
+pre {
+  background: #e8e4df;
+  border: 1px solid #d4cfc7;
+  padding: 1em;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+}
+
+/* Menu styling */
+.menu {
+  background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%);
+  padding: 0.75em 1em;
+  border-radius: 8px;
+  display: inline-block;
+  box-shadow: 0 2px 8px rgba(255, 94, 98, 0.2);
+}
+
+.menu li {
+  margin: 0 0.5em;
+}
+
+.menu a {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: white !important;
+  text-decoration: none;
+  padding: 0.5em 1em;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  background: transparent;
+  display: inline-block;
+}
+
+.menu a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 94, 98, 0.3);
+}
+
+/* Navigation HR styling */
+nav hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #d4cfc7, transparent);
+  margin: 1.5em 0;
+}
+
+/* General links with orange */
+a {
+  color: #e76f51;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+a:hover {
+  color: #f4a261;
+  border-bottom-color: #f4a261;
+  background: linear-gradient(180deg, transparent 85%, rgba(244, 162, 97, 0.15) 85%);
+}
+
+/* Wikilink styles */
+.wikilink {
+  color: #e76f51;
+  text-decoration: none;
+  border-bottom: 1px dashed #e76f51;
+  transition: all 0.2s ease;
+}
+
+.wikilink:hover {
+  color: #f4a261;
+  border-bottom-style: solid;
+  border-bottom-color: #f4a261;
+  background: linear-gradient(180deg, transparent 85%, rgba(244, 162, 97, 0.15) 85%);
+}
+
+.wikilink.broken {
+  color: #e63946;
+  border-bottom-color: #e63946;
+  border-bottom-style: dashed;
+  font-style: italic;
+}
+
+.wikilink.broken:hover {
+  background: linear-gradient(180deg, transparent 85%, rgba(230, 57, 70, 0.15) 85%);
+}
+
+/* Date styling */
+.date {
+  color: #e76f51;
+  font-weight: 500;
+  font-size: 0.9em;
+}
+

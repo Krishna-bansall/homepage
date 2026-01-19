@@ -1,0 +1,44 @@
+baseURL: http://localhost:1313
+languageCode: en-us
+title: My New Hugo Site
+theme: hugo-xmin
+
+enableRobotsTXT: true
+sitemap:
+  changefreq: monthly
+  filename: sitemap.xml
+  priority: 0.5
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+    extensions:
+      passthrough:
+        enable: true
+        delimiters:
+          block:
+            - ['\[', '\]']
+            - ['$$', '$$']
+          inline:
+            - ['\(', '\)']
+
+permalinks:
+  lab: "/lab/:slug/"
+  notes: "/notes/:slug/"
+  blog: "/blog/:year/:month/:slug/"
+
+menu:
+  main:
+    - name: Home
+      url: /
+      weight: 1
+    - name: Lab
+      url: /lab/
+      weight: 2
+    - name: Notes
+      url: /notes/
+      weight: 3
+    - name: Blog
+      url: /blog/
+      weight: 4

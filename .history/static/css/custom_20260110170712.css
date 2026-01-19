@@ -1,0 +1,238 @@
+/* Custom styles override the theme */
+
+/* Background color */
+body {
+  background-color: #f7f5f0;
+  color: #2c2926;
+}
+
+/* Classic serif for headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'EB Garamond', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-weight: 600;
+  color: #1a1816;
+  line-height: 1.2;
+}
+
+h1 {
+  font-weight: 700;
+  font-size: 2.25em;
+  padding-bottom: 0.3em;
+}
+
+/* Title span styling */
+.article-meta {
+  background-color: transparent;
+  margin-top: 2em;
+}
+
+.article-meta h1 {
+  margin: 0;
+  padding: 0;
+}
+
+.article-meta h2 {
+  font-size: 0.9em;
+  margin: 0.5em 0 0 0;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  color: #e76f51;
+}
+
+h2 {
+  font-size: 1.75em;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+/* Clean sans-serif for body text */
+body, p, li, td, th {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.7;
+  font-size: 1.05rem;
+}
+
+/* Beautiful italics styling */
+em, i {
+  font-family: 'EB Garamond', 'Georgia', 'Times New Roman', serif;
+  font-style: italic;
+  color: hsl(0, 0%, 0%);
+  font-size: 1.15em;
+  letter-spacing: 0.02em;
+  /* More slant for extra emphasis */
+  transform: skewX(-2deg);
+  display: inline-block;
+}
+
+/* Improved readability */
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5em 1em;
+}
+
+/* Paragraph spacing */
+p {
+  margin-bottom: 1.25em;
+}
+
+/* Blockquote styling */
+blockquote {
+  background: #ede8e0;
+  border-left: 4px solid #c4b8a8;
+  padding: 1em 1.5em;
+  margin: 1.5em 0;
+  font-style: italic;
+}
+
+/* Code styling */
+code {
+  background: #e8e4df;
+  padding: 0.2em 0.4em;
+  font-size: 0.9em;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+}
+
+pre {
+  background: #e8e4df;
+  border: 1px solid #d4cfc7;
+  padding: 1em;
+  overflow-x: auto;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+}
+
+/* Menu styling - minimalist */
+.menu {
+  padding: 0;
+}
+
+.menu li {
+  margin: 0 0.3em;
+}
+
+.menu a {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #2c2926 !important;
+  text-decoration: none;
+  padding: 0.4em 0.8em;
+  transition: color 0.3s ease;
+  background: transparent;
+  display: inline-block;
+}
+
+.menu a:hover {
+  color: #e76f51 !important;
+}
+
+/* Navigation HR styling */
+nav hr {
+  border: none;
+  height: 1px;
+  background: #d4cfc7;
+  margin: 1em 0;
+  opacity: 0.5;
+}
+
+/* General links with orange slide-up box effect */
+a {
+  color: #e76f51;
+  text-decoration: none;
+  position: relative;
+  display: inline;
+  transition: all 0.3s ease;
+  padding: 0;
+  margin: 0;
+}
+
+a::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: -4px;
+  right: -4px;
+  top: -2px;
+  background: linear-gradient(180deg, rgba(255, 153, 102, 0.35) 0%, rgba(255, 94, 98, 0.35) 100%);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.3s ease;
+  z-index: -1;
+}
+
+a:hover {
+  color: #cb4c4c;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.6), 0 0 12px rgba(255, 153, 102, 0.4);
+}
+
+a:hover::before {
+  transform: scaleY(1);
+}
+
+/* Wikilink styles */
+.wikilink {
+  color: #e76f51;
+  text-decoration: none;
+  position: relative;
+  display: inline;
+  border-bottom: 1px dashed #e76f51;
+  transition: all 0.3s ease;
+  padding: 0;
+  margin: 0;
+}
+
+.wikilink::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: -4px;
+  right: -4px;
+  top: -2px;
+  background: linear-gradient(180deg, rgba(255, 153, 102, 0.35) 0%, rgba(255, 94, 98, 0.35) 100%);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.3s ease;
+  z-index: -1;
+}
+
+.wikilink:hover {
+  color: #ffffff;
+  border-bottom-style: solid;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.6), 0 0 12px rgba(255, 153, 102, 0.4);
+}
+
+.wikilink:hover::before {
+  transform: scaleY(1);
+}
+
+.wikilink.broken {
+  color: #e63946;
+  border-bottom-color: #e63946;
+  border-bottom-style: dashed;
+  font-style: italic;
+}
+
+.wikilink.broken::before {
+  background: linear-gradient(180deg, rgba(230, 57, 70, 0.35) 0%, rgba(225, 29, 72, 0.35) 100%);
+}
+
+.wikilink.broken:hover {
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.6), 0 0 12px rgba(230, 57, 70, 0.4);
+}
+
+/* Date styling */
+.date {
+  color: #e76f51;
+  font-weight: 500;
+  font-size: 0.9em;
+}
+
